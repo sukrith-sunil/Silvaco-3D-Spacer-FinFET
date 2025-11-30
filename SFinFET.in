@@ -1,0 +1,204 @@
+	go atlas
+	TITLE S3-FinFET 3D (single-fin) – Corrected Electrodes & Re-Aligned Mesh
+
+	# #######################################################################
+	# # CORRECTION NOTES:
+	# # 1. CRITICAL FIX: 'electrode name=gate' moved from region 7 (SiO2)
+	# #    to region 4 (polysilicon).
+	# # 2. MESH OPTIMIZATION: Mesh is now 100% aligned with all *new*
+	# #    region and electrode coordinates (e.g., x=0.0269, x=0.0309).
+	# #######################################################################
+
+	mesh three space.mult=2.5
+
+	# --------------- OPTIMIZED & ALIGNED MESH ---------------
+	# x-direction mesh (transport)
+	# Aligned with: 0.001, 0.005, 0.0065, 0.0105, 0.0205, 0.0245, 0.0269, 0.0301, 0.0309, 0.035
+	x.mesh loc=0.000    spac=0.001
+	x.mesh loc=0.001    spac=0.0005  
+	x.mesh loc=0.005    spac=0.0005  
+	x.mesh loc=0.0065   spac=0.0005  
+	x.mesh loc=0.0105   spac=0.0001  
+	x.mesh loc=0.0205   spac=0.0001  
+	x.mesh loc=0.0245   spac=0.0005  
+	x.mesh loc=0.0269   spac=0.0005  
+	x.mesh loc=0.0301   spac=0.0001  
+	x.mesh loc=0.0309   spac=0.0001  
+	x.mesh loc=0.035    spac=0.001   
+
+	y.mesh loc=0.000     spac=0.001
+	y.mesh loc=0.00625   spac=0.0001  
+	y.mesh loc=0.00725   spac=0.0001  
+	y.mesh loc=0.008     spac=0.0001  
+	y.mesh loc=0.009     spac=0.0001  
+	y.mesh loc=0.012     spac=0.0001  
+	y.mesh loc=0.013     spac=0.0001  
+	y.mesh loc=0.093     spac=0.01   
+	y.mesh loc=0.108     spac=0.005   
+	y.mesh loc=0.110     spac=0.005   
+
+	z.mesh loc=0.000    spac=0.001
+	z.mesh loc=0.005    spac=0.0005  
+	z.mesh loc=0.00625  spac=0.0005  
+	z.mesh loc=0.00725  spac=0.0005  
+	z.mesh loc=0.008    spac=0.0002  
+	z.mesh loc=0.009    spac=0.0002  
+	z.mesh loc=0.015    spac=0.0002  
+	z.mesh loc=0.016    spac=0.0002  
+	z.mesh loc=0.01675  spac=0.0005  
+	z.mesh loc=0.01775  spac=0.0005  
+	z.mesh loc=0.019    spac=0.0005  
+	z.mesh loc=0.024    spac=0.001   
+	z.mesh loc=0.030    spac=0.001
+	# --------------- END OPTIMIZED MESH ---------------
+
+
+	# --------------- regions/materials (Corrected Order) ---------------
+	# region 1: air above device
+	region num=1 material=air x.min=0 x.max=0.035 y.min=0 y.max=0.110 z.min=0 z.max=0.03
+
+	# region 2: substrate
+	region num=2 material=silicon x.min=0.001 x.max=0.0301 y.min=0.093 y.max=0.108 z.min=0.0 z.max=0.024
+
+	# region 3: BOX
+	region num=3 material=SiO2 x.min=0.001 x.max=0.0301 y.min=0.013 y.max=0.093 z.min=0.0 z.max=0.024	
+
+	# Define active regions (Si Fin, Poly Gate) LAST so they overwrite correctly
+	# region 4: Gate Material (Poly)
+	region num=4 material=polysilicon x.min=0.0105 x.max=0.0205 y.min=0.00625 y.max=0.013 z.min=0.00625 z.max=0.01775
+
+	# region 5: spacer 1
+	region num=5 material=HfO2 x.min=0.0065 x.max=0.0105 y.min=0 y.max=0.013 z.min=0 z.max=0.024
+	# region 6: spacer 2
+	region num=6 material=HfO2 x.min=0.0205 x.max=0.0245 y.min=0 y.max=0.013 z.min=0 z.max=0.024
+
+	# region 7: gate oxide (under the gate)
+	region num=7 material=SiO2 x.min=0.0105 x.max=0.0205 y.min=0.00725 y.max=0.013 z.min=0.00725 z.max=0.01675
+
+	# region 8: Source Fin
+	region num=8 material=silicon x.min=0.001 x.max=0.0105 y.min=0.008 y.max=0.013 z.min=0.008 z.max=0.016
+
+	# region 9: Channel Fin
+	region num=9 material=silicon x.min=0.0105 x.max=0.0205 y.min=0.008 y.max=0.013 z.min=0.008 z.max=0.016
+
+	# region 10: Drain Fin
+	region num=10 material=silicon x.min=0.0205 x.max=0.0309 y.min=0.008 y.max=0.013 z.min=0.008 z.max=0.016
+
+
+	# --------------- electrodes / contacts (Corrected) ---------------
+	# Source on left S (now in region 8)
+	electrode name=source x.min=0.001 x.max=0.005 y.min=0.009 y.max=0.012 z.min=0.009 z.max=0.015
+	# Drain on right D (now in region 10)
+	electrode name=drain x.min=0.0269 x.max=0.0309 y.min=0.009 y.max=0.012 z.min=0.009 z.max=0.015
+
+	# gate electrode (now in region 4) --- CRITICAL FIX: Was region 7 (SiO2)
+	electrode name=gate region=4
+	# Substrate/back contact (now in region 2)
+	electrode name=substrate x.min=0.005 x.max=0.0301 y.min=0.108 y.max=0.109 z.min=0.005 z.max=0.019
+
+
+	# --------------- doping (Renumbered) ---------------
+	# Apply N+ / P- / N+ doping profile
+	doping uniform n.type conc=1e19 region=8  
+	doping uniform p.type conc=1e18 region=9  
+	doping uniform n.type conc=1e19 region=10 
+
+	# Substrate doping (now in region 2)
+	doping uniform p.type conc=1e20 region=2
+
+	# --------------- save initial structure ---------------
+	contact name=source
+	contact name=drain
+	contact name=gate workfunction=4.6 
+	save outfile=S3FinFET_3D_init.str
+
+
+	# --------------- physics models & solve init ---------------
+	models conmob fermi bgn srh auger cvtmob bbt.nonlocal
+
+	solve init
+	method newton carriers=2 itlimit=100 maxtrap=10
+
+	# --------------- DC Bias points and sweeps ---------------
+	# 1) ID–VGS sweep for VDS = 1 V (transfer curve)
+	solve init
+	solve vsubstrate=0.0 
+	solve vdrain=1 vgate=0.0 vsource=0.0
+	log outfile=S3_idvgs_vds1.log master
+	solve name=gate vgate=0 vstep=0.1 vfinal=1.0 vdrain=1
+	log off
+	save outfile=S3_idvgs_vds1.str
+
+	# 2) ID–VGS for VDS = 0.05 V (for threshold extraction)
+	solve init
+	solve vsubstrate=0.0 
+	solve vdrain=0.05 vsource=0.0
+	log outfile=S3_idvgs_vds0p05.log master
+	solve name=gate vgate=0 vstep=0.02 vfinal=1.0 vdrain=0.05
+	log off
+	save outfile=S3_idvgs_vdsn1.str
+
+	# 3) ID-VGS for VDS = 0.8 V
+	solve init
+	solve vsubstrate=0.0 
+	solve vdrain=0.8 vsource=0.0
+	log outfile=S3_idvgs_vds0p8.log master
+	solve name=gate vgate=0 vstep=0.1 vfinal=1.0 vdrain=0.8
+	log off
+	save outfile=S3_idvgs_vds0p8.str
+
+
+	# 4) ID–VDS output curves
+	# VGS = -1 V
+	solve init
+	solve vsubstrate=0.0 
+	solve vgate=-1 vsource=0.0
+	log outfile=S3_idvds_vgs0p5.log master
+	solve name=drain vdrain=0 vstep=0.02 vfinal=1.0 vgate=-1
+	log off
+	save outfile=S3_idvds_vgs0p5.str
+
+	# VGS = 1.0 V
+	solve init
+	solve vsubstrate=0.0 
+	solve vgate=1.0 vsource=0.0
+	log outfile=S3_idvds_vgs1p0.log master
+	solve name=drain vdrain=0 vstep=0.02 vfinal=1.0 vgate=1.0
+	log off
+	save outfile=S3_idvds_vgs1p0.str
+
+	# --------------- Threshold & DIBL extraction ---------------
+	extract init infile="S3_idvgs_vds0p05.log"
+	extract name="vt_lowVd" x.val from curve ((v."gate"), log10(abs(i."drain"))) where y.val=-7
+
+	extract init infile="S3_idvgs_vds0p8.log"
+	extract name="vt_highVd" x.val from curve ((v."gate"), log10(abs(i."drain"))) where y.val=-7
+
+	extract name="dibl_mV_per_V" ($"vt_lowVd" - $"vt_highVd")/(0.8 - 0.05)
+
+	# --------------- ION / IOFF and SS ---------------
+	extract init infile="S3_idvgs_vds0p8.log"
+	extract name="Ioff" y.val from curve(v."gate",i."drain") where x.val=0.0
+	extract name="Ion"  y.val from curve(v."gate",i."drain") where x.val=1.0
+	extract name="Ion_Ioff" $Ion/$Ioff
+
+	extract name="subvt" 1.0/slope(maxslope(curve(v."gate",log10(abs(i."drain")))))
+
+	# --------------- simple export for gm (for fT post-processing) ---------------
+	log outfile=S3_gm_small.log master
+	solve init
+
+	solve vdrain=0.8 vgate=0.72 vsource=0.0
+	solve name=gate vgate=0.72 vstep=0.01 vfinal=0.88 vdrain=0.8
+	log off
+	save outfile=S3_gm_small.str
+
+	# --------------- visualization & plotting ---------------
+	tonyplot S3_idvgs_vds0p8.log
+	tonyplot S3_idvgs_vds0p05.log
+	tonyplot S3_idvds_vgs0p5.log S3_idvds_vgs1p0.log
+
+	# --------------- save final device ---------------
+	save outfile=S3FinFET_3D_final.str
+
+	quit
